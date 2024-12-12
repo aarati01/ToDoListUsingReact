@@ -1,15 +1,16 @@
 
 // import './App.css'
 
+import Navbar from "./components/Navbar"
+
 function App() {
   // const [count, setCount] = useState(0)
 
   return (
     <>
-      <div className="container">
-        <div className="bg-red-600">
-          Hey I am red.
-        </div>
+    <Navbar></Navbar>
+      <div className="container mx-auto my-5 rounded-xl p-5 bg-slate-600">
+          <h1 className="text-xl font-bold">Your Todos </h1>
       </div>
     </>
   )
