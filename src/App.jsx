@@ -18,9 +18,11 @@ function App() {
     }
   };
 
-  const handleDelete = (index) => {
-    const updatedTodos = todos.filter((_, i) => i !== index);
-    setTodos(updatedTodos);
+  const handleDelete = (e, id) => {
+    let newTodos = todos.filter((item) => {
+      return item.id !== id;
+    });
+    setTodos(newTodos);
   };
 
   const handleAdd = () => {
@@ -36,7 +38,7 @@ function App() {
     let index = todos.findIndex((item) => {
       return item.id === id;
     });
-    let newTodos = todos;
+    let newTodos = [...todos];
     newTodos[index].iscompleted = !newTodos[index].iscompleted;
     setTodos(newTodos);
   };
@@ -65,6 +67,7 @@ function App() {
         </div>
         <h1 className="text-xl font-bold">Your Todos </h1>
         <div className="todos">
+          {todos.length === 0 && <div> No Todos to display</div>}
           {todos.map((item, index) => {
             return (
               <div
@@ -73,10 +76,10 @@ function App() {
                 key={index}
               >
                 <input
-                  name={todo.id}
+                  name={item.id}
                   onChange={handleCheckbox}
                   type="checkbox"
-                  value={todo.iscompleted}
+                  value={item.iscompleted}
                   id=""
                 ></input>
                 <div className={item.iscompleted ? "line-through" : ""}>
@@ -90,7 +93,7 @@ function App() {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(index)}
+                    onClick={(e) => handleDelete(e, item.id)}
                     className="bg-violet-400 hover:bg-violet-700 p-2 py-1 text-sm font-bold text-white rounded-md mx-1"
                   >
                     Delete
