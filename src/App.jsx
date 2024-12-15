@@ -8,14 +8,26 @@ function App() {
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState([]);
 
-  const handleEdit = (index) => {
-    const updatedTodos = [...todos];
-    const todoToEdit = updatedTodos[index];
-    const updatedText = prompt("Edit your todo:", todoToEdit.todo);
-    if (updatedText) {
-      updatedTodos[index].todo = updatedText;
-      setTodos(updatedTodos);
+  useEffect(() => {
+    let todoString = localStorage.getItem("todos"); // Corrected key usage
+    if (todoString) {
+      let todos = JSON.parse(todoString);
+      setTodos(todos);
     }
+  }, []);
+
+  const saveToLS = () => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  };
+
+  const handleEdit = (e, id) => {
+    let t = todos.filter((i) => i.id === id);
+    setTodo(t[0].todo);
+    let newTodos = todos.filter((item) => {
+      return item.id !== id;
+    });
+    setTodos(newTodos);
+    saveToLS();
   };
 
   const handleDelete = (e, id) => {
@@ -23,16 +35,19 @@ function App() {
       return item.id !== id;
     });
     setTodos(newTodos);
+    saveToLS();
   };
 
   const handleAdd = () => {
     setTodos([...todos, { id: uuidv4(), todo, iscompleted: false }]);
     setTodo("");
+    saveToLS();
   };
 
   const handleChange = (e) => {
     setTodo(e.target.value);
   };
+
   const handleCheckbox = (e) => {
     let id = e.target.name;
     let index = todos.findIndex((item) => {
@@ -41,7 +56,9 @@ function App() {
     let newTodos = [...todos];
     newTodos[index].iscompleted = !newTodos[index].iscompleted;
     setTodos(newTodos);
+    saveToLS();
   };
+
   useEffect(() => {
     console.log(todos);
   }, [todos]);
@@ -62,7 +79,7 @@ function App() {
             onClick={handleAdd}
             className="bg-violet-400 hover:bg-violet-700 p-2 py-1 text-sm font-bold text-white rounded-md mx-1"
           >
-            Add
+            Save
           </button>
         </div>
         <h1 className="text-xl font-bold">Your Todos </h1>
@@ -70,24 +87,19 @@ function App() {
           {todos.length === 0 && <div> No Todos to display</div>}
           {todos.map((item, index) => {
             return (
-              <div
-                className="todo flex w-1/2  my-2 justify-between
-               "
-                key={index}
-              >
+              <div className="todo flex w-1/2 my-2 justify-between" key={index}>
                 <input
                   name={item.id}
                   onChange={handleCheckbox}
                   type="checkbox"
-                  value={item.iscompleted}
-                  id=""
+                  checked={item.iscompleted} // Fixed to correctly show the checkbox status
                 ></input>
                 <div className={item.iscompleted ? "line-through" : ""}>
                   {item.todo}
                 </div>
-                <div className="buttons">
+                <div className="buttons flex h-full">
                   <button
-                    onClick={() => handleEdit(index)}
+                    onClick={(e) => handleEdit(e, item.id)}
                     className="bg-violet-400 hover:bg-violet-700 p-2 py-1 text-sm font-bold text-white rounded-md mx-1"
                   >
                     Edit
